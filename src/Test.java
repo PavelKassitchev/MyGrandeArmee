@@ -2,7 +2,7 @@ import forces.Force;
 import forces.Unit;
 import forces.UnitType;
 import nations.Nation;
-import terrain.Hex;
+import terrains.Hex;
 
 public class Test {
     public static void main(String[] args) {
@@ -18,14 +18,12 @@ public class Test {
         Force force2 = new Force(unit4);
 
         force1.attach(force2);
-        System.out.println(force1);
-        System.out.println(force1.getSpeed());
-        System.out.println(force2.getSpeed());
-        Unit unit5 = (Unit)force1.detach(unit1);
-        System.out.println(unit5.getSpeed());
-        System.out.println(force1.getSpeed());
-        Force force3 = force1.detach(unit2);
-        System.out.println(force3.getSpeed());
-        System.out.println(force1.getSpeed());
+
+        Force force3 = new Force();
+        force3.attach(new Unit(Nation.AUSTRIA, UnitType.INFANTRY, hex));
+        force3.attach(new Unit(Nation.PRUSSIA, UnitType.INFANTRY, hex));
+
+        Battle battle = new Battle(force1, force3);
+        System.out.println(battle.battleResolve());
     }
 }

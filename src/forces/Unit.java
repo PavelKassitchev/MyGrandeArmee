@@ -2,7 +2,7 @@
 package forces;
 
 import nations.Nation;
-import terrain.Hex;
+import terrains.Hex;
 
 public class Unit extends Force{
 
@@ -13,11 +13,12 @@ public class Unit extends Force{
         setNation(nation);
         setType(type);
         setUnit(true);
-        setStrength(type.getMAX_STRENGTH());
-        setFoodStock(type.getMAX_FOOD_LOAD());
-        setAmmoStock(type.getMAX_AMMO_LOAD());
+        setStrength(type.MAX_STRENGTH);
+        setFoodStock(type.MAX_FOOD_LOAD);
+        setAmmoStock(type.MAX_AMMO_LOAD);
         setSpeed(hex.getSpeed(this));
         setHex(hex);
+        setXp(0);
     }
 
     public UnitType getType() {

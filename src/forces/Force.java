@@ -1,16 +1,15 @@
 package forces;
 
 import nations.Nation;
-import terrain.Hex;
+import terrains.Hex;
 
 import java.util.ArrayList;
 
 public class Force {
 
     public Force() {
-
+        forces = new ArrayList<>();
     }
-
 
     public Force(Unit... units) {
         forces = new ArrayList<>();
@@ -108,6 +107,14 @@ public class Force {
         this.speed = speed;
     }
 
+    public int getXp() {
+        return xp;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
+    }
+
     public void setGeneral(General general) {
         this.general = general;
     }
@@ -152,8 +159,6 @@ public class Force {
             }
         }
 
-
-
         return null;
     }
 
@@ -181,7 +186,7 @@ public class Force {
             }
         }
         else {
-            float stock = getAmmoStock() * force.getStrength() / getStrength();
+            float stock = getAmmoStock() * force.getAmmoNeed() / getAmmoNeed();
             force.setAmmoStock(stock);
             setAmmoStock(ammoStock - stock);
         }
@@ -198,7 +203,7 @@ public class Force {
             }
         }
         else {
-            float stock = getFoodStock() * force.getStrength() / getStrength();
+            float stock = getFoodStock() * force.getFoodNeed() / getFoodNeed();
             force.setFoodStock(stock);
             setFoodStock(foodStock - stock);
         }
@@ -222,7 +227,6 @@ public class Force {
             }
             setSpeed(speed);
         }
-
     }
 
     private float getFoodLoad() {
@@ -230,7 +234,7 @@ public class Force {
         for (Force force: forces) {
             if (force.isUnit()) {
                 Unit unit = (Unit)force;
-                load += unit.getType().getMAX_FOOD_LOAD();
+                load += unit.getType().MAX_FOOD_LOAD * unit.getStrength() / unit.getType().MAX_STRENGTH;
             }
             else {
                 force.getFoodLoad();
@@ -243,7 +247,7 @@ public class Force {
         for (Force force: forces) {
             if (force.isUnit()) {
                 Unit unit = (Unit)force;
-                load += unit.getType().getMAX_AMMO_LOAD();
+                load += unit.getType().MAX_AMMO_LOAD * unit.getStrength() / unit.getType().MAX_STRENGTH;
             }
             else {
                 force.getAmmoLoad();
@@ -252,5 +256,32 @@ public class Force {
         return load;
     }
 
+    private float getFoodNeed() {
+        float need = 0.0f;
+        for (Force force: forces) {
+            if (force.isUnit()) {
+                Unit unit = (Unit)force;
+                need += unit.getType().FOOD_NEED * unit.getStrength() / unit.getType().MAX_STRENGTH;
+            }
+            else {
+                force.getFoodNeed();
+            }
+        }
+        return need;
+    }
+
+    private float getAmmoNeed() {
+        float need = 0.0f;
+        for (Force force: forces) {
+            if (force.isUnit()) {
+                Unit unit = (Unit)force;
+                need += unit.getType().AMMO_NEED * unit.getStrength() / unit.getType().MAX_STRENGTH;
+            }
+            else {
+                force.getAmmoNeed();
+            }
+        }
+        return need;
+    }
 
 }
