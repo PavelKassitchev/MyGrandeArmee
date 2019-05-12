@@ -7,8 +7,8 @@ public enum UnitType {
             2.0f),
     ARTILLERY("Battery", 100, 1.3f, 1.6f, 0.05f, 0.2f, 2.0f, 2.0f, 2.0f,
             0.7f),
-    SUPPLY("Wagon", 200, 0.0f, 0.1f, 0.0f, 0.2f, 0.05f, 25.0f, 25.0f,
-            0.75f);
+    SUPPLY("Wagon", 150, 0.0f, 0.05f, 0.0f, 0.1f, 0.05f, 25.0f, 25.0f,
+            0.7f);
 
     public final String NAME;
     public final int MAX_STRENGTH;
@@ -17,8 +17,8 @@ public enum UnitType {
     public final float PURSUIT;
     public final float FOOD_NEED;
     public final float AMMO_NEED;
-    public final float MAX_FOOD_LOAD;
-    public final float MAX_AMMO_LOAD;
+    public final float FOOD_LIMIT;
+    public final float AMMO_LIMIT;
     public final float SPEED;
 
 
@@ -31,8 +31,8 @@ public enum UnitType {
         PURSUIT = pursuit;
         FOOD_NEED = foodNeed;
         AMMO_NEED = ammoNeed;
-        MAX_FOOD_LOAD = foodMax;
-        MAX_AMMO_LOAD = ammoMax;
+        FOOD_LIMIT = foodMax;
+        AMMO_LIMIT = ammoMax;
         SPEED = speed;
 
     }
