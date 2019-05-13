@@ -1,13 +1,14 @@
 package forces;
 
 public enum UnitType {
-    INFANTRY("Battalion", 800, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 2.0f, 2.0f,
+    ARTILLERY("Battery", 100, 1.3f, 1.6f, 0.05f, 0.2f, 2.0f, 2.0f, 2.0f,
+            0.7f),
+    INFANTRY("Battalion",
+            800, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 2.0f, 2.0f,
             1.0f),
     CAVALRY("Squadron", 250, 1.0f, 0.3f, 3.0f, 1.0f, 0.2f, 3.0f, 3.0f,
             2.0f),
-    ARTILLERY("Battery", 100, 1.3f, 1.6f, 0.05f, 0.2f, 2.0f, 2.0f, 2.0f,
-            0.7f),
-    SUPPLY("Wagon", 150, 0.0f, 0.05f, 0.0f, 0.1f, 0.05f, 25.0f, 25.0f,
+    SUPPLY("Wagon", 150, 0.0f, 0.05f, 0.0f, 0.0f, 0.0f, 25.0f, 25.0f,
             0.7f);
 
     public final String NAME;

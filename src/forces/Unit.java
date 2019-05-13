@@ -48,4 +48,12 @@ public class Unit extends Force{
         return new Force(this);
     }
 
+    public boolean belongsToTypes(UnitType[]types, int i) {
+
+        for (int j = i; j < types.length; j++) {
+            if (getType() == types[j]) return true;
+        }
+        return false;
+    }
+
 }

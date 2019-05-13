@@ -299,7 +299,7 @@ public class Force {
         float foodToDistribute = 0;
         float ammoToDistribute;
 
-        if (foodStock + food > foodLimit - wagons * UnitType.SUPPLY.FOOD_LIMIT) {
+        if (foodStock + food >= foodLimit - wagons * UnitType.SUPPLY.FOOD_LIMIT) {
             if (foodStock + food > foodLimit) {
                 foodToDistribute = fillCombatFood();
                 foodToDistribute += fillWagonFood();
@@ -318,8 +318,82 @@ public class Force {
                 }
             }
         }
+        else {
+            foodToDistribute = 0;
+            float foodRatio = (foodStock + food) / getFoodNeed();
+            System.out.println("Total food: " + (getFoodStock() + food));
+            emptyWagonFood();
+            emptyCombatFood();
+            System.out.println("After emptying the food stock is " + getFoodStock());
+
+
+            //TODO RESTORE IF THE NEW VERSION, FOODTOCOMBATANTS, DOESN'T WORK
+            if (foodRatio <= UnitType.ARTILLERY.FOOD_LIMIT / UnitType.ARTILLERY.FOOD_NEED) {
+                distributeCombatFood(foodRatio);
+            }
+
+            //System.out.println(foodRatio * getFoodNeed() + "... for distr");
+            //foodToCombatants(foodRatio * getFoodNeed());
+        }
         System.out.println("Food To Distribute: " + foodToDistribute);
         System.out.println();
+        //TODO remember about AMMO
+        while (foodToDistribute > 0) {
+            Unit wagon = new Unit(nation, UnitType.SUPPLY, hex);
+            if (foodToDistribute > UnitType.SUPPLY.FOOD_LIMIT) {
+                foodToDistribute -= UnitType.SUPPLY.FOOD_LIMIT;
+            }
+            else {
+                wagon.setFoodStock(foodToDistribute);
+                foodToDistribute = 0;
+            }
+            attach(wagon);
+            wagons++;
+        }
+    }
+
+    public float foodToCombatants(float food) {
+        float foodToCombat = food;
+        float used = 0;
+        float ratio;
+        UnitType[] types = {UnitType.INFANTRY, UnitType.CAVALRY, UnitType.ARTILLERY};
+
+        return used;
+    }
+
+    public void distributeCombatFood(float ratio) {
+        for (Force force: forces) {
+            if (!force.isSupply()) {
+                if (force.isUnit()) {
+                    force.setFoodStock(force.getFoodNeed() * ratio);
+                    setFoodStock(getFoodStock() + force.getFoodNeed() * ratio);
+                    System.out.println("Current stock: " + getFoodStock() + " Type: " + ((Unit)force).getType());
+                }
+                else {
+                    force.distributeCombatFood(ratio);
+                    setFoodStock(getFoodStock() + force.getFoodStock());
+                }
+            }
+        }
+    }
+
+    public float emptyCombatFood() {
+        float food = 0;
+        for (Force force: forces) {
+            if (!force.isSupply()) {
+                if (force.isUnit()) {
+                    food += force.getFoodStock();
+                    setFoodStock(getFoodStock() - force.getFoodStock());
+                    force.setFoodStock(0);
+                }
+                else {
+                    float f = force.emptyCombatFood();
+                    food += f;
+                    setFoodStock(getFoodStock() - f);
+                }
+            }
+        }
+        return food;
     }
 
     public float fillWagonFood() {
@@ -420,7 +494,7 @@ public class Force {
                 }
             }
             else {
-                float f = takeWagonFood(foodToDistribute);
+                float f = force.takeWagonFood(foodToDistribute);
                 foodToDistribute -= f;
                 setFoodStock(getFoodStock() - f);
             }
@@ -475,7 +549,7 @@ public class Force {
                 }
             }
             else {
-                float f = fillWagonFood(foodToDistribute);
+                float f = foodToDistribute - force.fillWagonFood(foodToDistribute);
                 foodToDistribute -= f;
                 setFoodStock(getFoodStock() + f);
             }
