@@ -318,6 +318,8 @@ public class Force {
                 }
             }
         }
+
+        //TODO I want to replace this else with Method foodToCombatants
         else {
             foodToDistribute = 0;
             float foodRatio = (foodStock + food) / getFoodNeed();
@@ -328,12 +330,12 @@ public class Force {
 
 
             //TODO RESTORE IF THE NEW VERSION, FOODTOCOMBATANTS, DOESN'T WORK
-            if (foodRatio <= UnitType.ARTILLERY.FOOD_LIMIT / UnitType.ARTILLERY.FOOD_NEED) {
-                distributeCombatFood(foodRatio);
-            }
+            //if (foodRatio <= UnitType.ARTILLERY.FOOD_LIMIT / UnitType.ARTILLERY.FOOD_NEED) {
+                //distributeCombatFood(foodRatio);
+            //}
 
             //System.out.println(foodRatio * getFoodNeed() + "... for distr");
-            //foodToCombatants(foodRatio * getFoodNeed());
+            foodToCombatants(foodRatio * getFoodNeed());
         }
         System.out.println("Food To Distribute: " + foodToDistribute);
         System.out.println();
@@ -353,12 +355,66 @@ public class Force {
     }
 
     public float foodToCombatants(float food) {
-        float foodToCombat = food;
-        float used = 0;
-        float ratio;
+        float toDistribute = food;
+        float distributed = 0;
+        float ratio = food / getFoodNeed();
         UnitType[] types = {UnitType.INFANTRY, UnitType.CAVALRY, UnitType.ARTILLERY};
+        if (ratio < 2) {
+            distributed = foodToUnits(ratio, UnitType.INFANTRY, UnitType.CAVALRY, UnitType.ARTILLERY);
+        }
+        else if (ratio < 4) {
+            distributed = foodToUnits(UnitType.INFANTRY);
+            ratio = (food - distributed) / (getFoodNeed() - distributed / 2);
+            distributed = foodToUnits(ratio, UnitType.CAVALRY, UnitType.ARTILLERY);
+        }
+        else {
+            distributed = foodToUnits(UnitType.INFANTRY, UnitType.CAVALRY);
+            ratio = 10 * (food - distributed) / (getFoodLimit() - 25.0f * wagons - getFoodStock());
+            distributed= foodToUnits(ratio, UnitType.ARTILLERY);
+        }
 
-        return used;
+        return distributed;
+    }
+
+    public float foodToUnits (UnitType... type) {
+        float distributed = 0;
+        for (Force force: forces) {
+            if (force.isUnit()) {
+                if (((Unit)force).belongsToTypes(type, 0)) {
+                    float d = force.getFoodLimit();
+                    force.setFoodStock(d);
+                    setFoodStock(getFoodStock() + d);
+                    distributed += d;
+                }
+            }
+            else {
+                float d = force.foodToUnits(type);
+                setFoodStock(getFoodStock() + d);
+                distributed += d;
+
+            }
+        }
+        return distributed;
+    }
+
+    public float foodToUnits(float ratio, UnitType... type) {
+        float distributed = 0;
+        for (Force force: forces) {
+            if (force.isUnit()) {
+                if (((Unit)force).belongsToTypes(type, 0)) {
+                    float d = force.getFoodNeed() * ratio;
+                    force.setFoodStock(d);
+                    setFoodStock(getFoodStock() + d);
+                    distributed += d;
+                }
+            }
+            else {
+                float d = force.foodToUnits(ratio, type);
+                setFoodStock(getFoodStock() + d);
+                distributed += d;
+            }
+        }
+        return distributed;
     }
 
     public void distributeCombatFood(float ratio) {

@@ -61,7 +61,7 @@ public class Test {
         System.out.println("2nd Corps: food - " + force2.getFoodStock() + " ammo - " + force2.getAmmoStock());
         System.out.println();
 
-        force1.distributeSupplies(100, 0);
+        force1.distributeSupplies(400, 0);
         list(force1);
         System.out.println();
         System.out.println("Army: food - " + force1.getFoodStock() + " food need - " +
