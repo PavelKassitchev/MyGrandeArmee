@@ -128,33 +128,6 @@ public class Force {
         return force;
     }
 
-    public void redistributeSupplies() {
-
-        float foodToDistribute;
-        float ammoToDistribute;
-
-        if (foodStock > foodLimit - wagons * UnitType.SUPPLY.FOOD_LIMIT) {
-            foodToDistribute = fillCombatFood();
-            takeWagonFood(foodToDistribute);
-            foodToDistribute = 0;
-        }
-        else {
-            foodToDistribute = emptyWagonFood();
-        }
-
-        if (ammoStock > ammoLimit - wagons * UnitType.SUPPLY.AMMO_LIMIT) {
-            ammoToDistribute = fillCombatAmmo();
-            takeWagonAmmo(ammoToDistribute);
-            ammoToDistribute = 0;
-        }
-        else {
-            ammoToDistribute = emptyWagonAmmo();
-        }
-
-        distributeSupplies(foodToDistribute, ammoToDistribute);
-
-    }
-
     public void distributeSupplies(float food, float ammo) {
         float foodToDistribute = 0;
         float ammoToDistribute;
@@ -179,23 +152,13 @@ public class Force {
             }
         }
 
-        //TODO I want to replace this else with Method foodToCombatants
         else {
             foodToDistribute = 0;
-            float foodRatio = (foodStock + food) / foodNeed;
-            System.out.println("Total food: " + (foodStock + food));
+            float totalFood = foodStock + food;
+            System.out.println("Total food: " + totalFood);
             emptyWagonFood();
             emptyCombatFood();
-            System.out.println("After emptying the food stock is " + foodStock);
-
-
-            //TODO RESTORE IF THE NEW VERSION, FOODTOCOMBATANTS, DOESN'T WORK
-            //if (foodRatio <= UnitType.ARTILLERY.FOOD_LIMIT / UnitType.ARTILLERY.FOOD_NEED) {
-                //distributeCombatFood(foodRatio);
-            //}
-
-            //System.out.println(foodRatio * getFoodNeed() + "... for distr");
-            foodToCombatants(foodRatio * foodNeed);
+            foodToCombatants(totalFood);
         }
         System.out.println("Food To Distribute: " + foodToDistribute);
         System.out.println();
@@ -224,9 +187,19 @@ public class Force {
             distributed = foodToUnits(ratio, UnitType.INFANTRY, UnitType.CAVALRY, UnitType.ARTILLERY);
         }
         else if (ratio < 4) {
+            System.out.println("OLD RATIO : " + ratio);
             distributed = foodToUnits(UnitType.INFANTRY);
             ratio = (food - distributed) / (foodNeed - distributed / 2);
-            distributed = foodToUnits(ratio, UnitType.CAVALRY, UnitType.ARTILLERY);
+            System.out.println("NEW RATIO : " + ratio);
+            toDistribute -= distributed;
+            if (ratio < 4) {
+                distributed = foodToUnits(ratio, UnitType.CAVALRY, UnitType.ARTILLERY);
+            }
+            else {
+                distributed = foodToUnits(UnitType.CAVALRY);
+                ratio = 10 * (toDistribute - distributed) / (foodLimit - wagons * 25 - foodStock);
+                distributed = foodToUnits(ratio, UnitType.ARTILLERY);
+            }
         }
         else {
             distributed = foodToUnits(UnitType.INFANTRY, UnitType.CAVALRY);

@@ -60,15 +60,15 @@ public class Test {
         list(force1);
         System.out.println();
         System.out.println("Army: food - " + force1.foodStock + " food need - " +
-                force1.foodNeed + " ammo - " + force1.ammoStock);
+                force1.foodNeed + " force limit without wagons: " + (force1.foodLimit - force1.wagons * 25) + " ammo - " + force1.ammoStock);
         System.out.println("2nd Corps: food - " + force2.foodStock + " ammo - " + force2.ammoStock);
         System.out.println();
 
-        force1.distributeSupplies(0, 0);
+        force1.distributeSupplies(3, 0);
         list(force1);
         System.out.println();
         System.out.println("Army: food - " + force1.foodStock + " food need - " +
-                force1.foodNeed + " ammo - " + force1.ammoStock);
+                force1.foodNeed + " force limit without wagons: " + (force1.foodLimit - force1.wagons * 25) + " ammo - " + force1.ammoStock);
         System.out.println("2nd Corps: food - " + force2.foodStock + " ammo - " + force2.ammoStock);
         System.out.println();
 
