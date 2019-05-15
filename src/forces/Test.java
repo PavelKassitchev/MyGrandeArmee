@@ -1,3 +1,5 @@
+package forces;
+
 import forces.Force;
 import forces.Unit;
 import forces.UnitType;
@@ -10,10 +12,11 @@ public class Test {
 
     static void list(Force force1) {
 
-        for (Force force : force1.getForces()) {
-            if (force.isUnit()) {
+        for (Force force : force1.forces) {
+            if (force.isUnit) {
                 Unit unit = (Unit) force;
-                System.out.println("Name: " + unit.getType() + " food: " + unit.getFoodStock() + " ammo: " + unit.getAmmoStock());
+                System.out.println("Name: " + unit.getType() + " food: " + unit.foodStock + " ammo: "
+                        + unit.ammoStock);
             }
             else {
 
@@ -37,13 +40,13 @@ public class Test {
         Unit unit7 = new Unit(Nation.FRANCE, UnitType.SUPPLY, hex);
 
 
-        unit5.setFoodStock(0);
-        unit5.setAmmoStock(0);
-        unit6.setFoodStock(0);
-        unit1.setFoodStock(1.0f);
-        unit3.setFoodStock(0.5f);
-        unit7.setFoodStock(0);
-        unit2.setFoodStock(0.1f);
+        unit5.foodStock =0;
+        unit5.ammoStock = 0;
+        unit6.foodStock = 0;
+        unit1.foodStock = 1.0f;
+        unit3.foodStock = 0.5f;
+        unit7.foodStock = 0;
+        unit2.foodStock = 0.1f;
 
         Force force1 = new Force(unit1, unit2, unit7);
         Force force2 = new Force(unit3, unit4);
@@ -56,17 +59,17 @@ public class Test {
 
         list(force1);
         System.out.println();
-        System.out.println("Army: food - " + force1.getFoodStock() + " food need - " +
-                force1.getFoodNeed() + " ammo - " + force1.getAmmoStock());
-        System.out.println("2nd Corps: food - " + force2.getFoodStock() + " ammo - " + force2.getAmmoStock());
+        System.out.println("Army: food - " + force1.foodStock + " food need - " +
+                force1.foodNeed + " ammo - " + force1.ammoStock);
+        System.out.println("2nd Corps: food - " + force2.foodStock + " ammo - " + force2.ammoStock);
         System.out.println();
 
-        force1.distributeSupplies(400, 0);
+        force1.distributeSupplies(0, 0);
         list(force1);
         System.out.println();
-        System.out.println("Army: food - " + force1.getFoodStock() + " food need - " +
-                force1.getFoodNeed() + " ammo - " + force1.getAmmoStock());
-        System.out.println("2nd Corps: food - " + force2.getFoodStock() + " ammo - " + force2.getAmmoStock());
+        System.out.println("Army: food - " + force1.foodStock + " food need - " +
+                force1.foodNeed + " ammo - " + force1.ammoStock);
+        System.out.println("2nd Corps: food - " + force2.foodStock + " ammo - " + force2.ammoStock);
         System.out.println();
 
         System.out.println();

@@ -10,25 +10,25 @@ public class Unit extends Force{
 
     public Unit(Nation nation, UnitType type, Hex hex) {
         super();
-        setNation(nation);
+        this.nation = nation;
         setType(type);
-        setUnit(true);
+        isUnit = true;
         if (type == UnitType.SUPPLY) {
-            setSupply(true);
-            setWagons(1);
+            isSupply = true;
+            wagons = 1;
         }
-        setStrength(type.MAX_STRENGTH);
-        setFoodStock(type.FOOD_LIMIT);
-        setAmmoStock(type.AMMO_LIMIT);
-        setSpeed(hex.getSpeed(this));
-        setHex(hex);
-        setXp(0);
-        setMorale(nation.getNationalMorale());
-        setFatigue(0.0f);
-        setFoodLimit(type.FOOD_LIMIT);
-        setFoodNeed(type.FOOD_NEED);
-        setAmmoLimit(type.AMMO_LIMIT);
-        setAmmoNeed(type.AMMO_NEED);
+        strength = (type.MAX_STRENGTH);
+        foodStock = type.FOOD_LIMIT;
+        ammoStock = type.AMMO_LIMIT;
+        speed = hex.getSpeed(this);
+        this.hex = hex;
+        xp = 0;
+        morale = nation.getNationalMorale();
+        fatigue = 0;
+        foodLimit = type.FOOD_LIMIT;
+        foodNeed = type.FOOD_NEED;
+        ammoLimit = type.AMMO_LIMIT;
+        ammoNeed = type.AMMO_NEED;
     }
 
     public UnitType getType() {
