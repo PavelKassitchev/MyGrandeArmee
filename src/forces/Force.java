@@ -2,8 +2,10 @@ package forces;
 
 import nations.Nation;
 import terrains.Hex;
-import static forces.UnitType.*;
+
 import java.util.ArrayList;
+
+import static forces.UnitType.*;
 
 public class Force {
 
@@ -114,7 +116,7 @@ public class Force {
         ammoLimit = ammoLimit - force.ammoLimit;
         foodNeed = foodNeed - force.foodNeed;
         ammoNeed = ammoNeed - force.ammoNeed;
-        foodStock= foodStock - force.foodStock;
+        foodStock = foodStock - force.foodStock;
         ammoStock = ammoStock - force.ammoStock;
         wagons -= force.wagons;
         if (force.speed == speed) {
@@ -138,21 +140,17 @@ public class Force {
                 foodToDistribute += fillWagonFood();
                 foodToDistribute = food - foodToDistribute;
                 //TODO new Wagons
-            }
-            else {
+            } else {
                 foodToDistribute = fillCombatFood();
                 if (food - foodToDistribute > 0) {
                     fillWagonFood(food - foodToDistribute);
                     foodToDistribute = 0;
-                }
-                else {
+                } else {
                     takeWagonFood(foodToDistribute - food);
                     foodToDistribute = 0;
                 }
             }
-        }
-
-        else {
+        } else {
             foodToDistribute = 0;
             float totalFood = foodStock + food;
             System.out.println("Total food: " + totalFood);
@@ -167,8 +165,7 @@ public class Force {
             Unit wagon = new Unit(nation, UnitType.SUPPLY, hex);
             if (foodToDistribute > UnitType.SUPPLY.FOOD_LIMIT) {
                 foodToDistribute -= UnitType.SUPPLY.FOOD_LIMIT;
-            }
-            else {
+            } else {
                 wagon.foodStock = foodToDistribute;
                 foodToDistribute = 0;
             }
@@ -185,8 +182,7 @@ public class Force {
 
         if (ratio < 2) {
             distributed = foodToUnits(ratio, UnitType.INFANTRY, UnitType.CAVALRY, UnitType.ARTILLERY);
-        }
-        else if (ratio < 4) {
+        } else if (ratio < 4) {
             System.out.println("OLD RATIO : " + ratio);
             distributed = foodToUnits(UnitType.INFANTRY);
             ratio = (food - distributed) / (foodNeed - distributed / 2);
@@ -194,34 +190,31 @@ public class Force {
             toDistribute -= distributed;
             if (ratio < 4) {
                 distributed = foodToUnits(ratio, UnitType.CAVALRY, UnitType.ARTILLERY);
-            }
-            else {
+            } else {
                 distributed = foodToUnits(UnitType.CAVALRY);
                 ratio = 10 * (toDistribute - distributed) / (foodLimit - wagons * 25 - foodStock);
                 distributed = foodToUnits(ratio, UnitType.ARTILLERY);
             }
-        }
-        else {
+        } else {
             distributed = foodToUnits(UnitType.INFANTRY, UnitType.CAVALRY);
             ratio = 10 * (food - distributed) / (foodLimit - 25.0f * wagons - foodStock);
-            distributed= foodToUnits(ratio, UnitType.ARTILLERY);
+            distributed = foodToUnits(ratio, UnitType.ARTILLERY);
         }
 
         return distributed;
     }
 
-    public float foodToUnits (UnitType... type) {
+    public float foodToUnits(UnitType... type) {
         float distributed = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
-                if (((Unit)force).belongsToTypes(type, 0)) {
+                if (((Unit) force).belongsToTypes(type, 0)) {
                     float d = force.foodLimit;
                     force.foodStock = d;
                     foodStock += d;
                     distributed += d;
                 }
-            }
-            else {
+            } else {
                 float d = force.foodToUnits(type);
                 foodStock += d;
                 distributed += d;
@@ -233,16 +226,15 @@ public class Force {
 
     public float foodToUnits(float ratio, UnitType... type) {
         float distributed = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
-                if (((Unit)force).belongsToTypes(type, 0)) {
+                if (((Unit) force).belongsToTypes(type, 0)) {
                     float d = force.foodNeed * ratio;
                     force.foodStock = d;
                     foodStock = foodStock + d;
                     distributed += d;
                 }
-            }
-            else {
+            } else {
                 float d = force.foodToUnits(ratio, type);
                 foodStock = foodStock + d;
                 distributed += d;
@@ -254,14 +246,13 @@ public class Force {
 
     public float emptyCombatFood() {
         float food = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (!force.isSupply) {
                 if (force.isUnit) {
                     food += force.foodStock;
                     foodStock -= force.foodStock;
                     force.foodStock = 0;
-                }
-                else {
+                } else {
                     float f = force.emptyCombatFood();
                     food += f;
                     foodStock -= f;
@@ -273,7 +264,7 @@ public class Force {
 
     public float fillWagonFood() {
         float food = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
                 if (force.isSupply) {
                     food += force.foodLimit - force.foodStock;
@@ -281,8 +272,7 @@ public class Force {
                     force.foodStock = force.foodLimit;
 
                 }
-            }
-            else {
+            } else {
                 float f = force.fillWagonFood();
                 food += f;
                 foodStock += f;
@@ -293,16 +283,15 @@ public class Force {
 
     public float fillWagonAmmo() {
         float ammo = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
                 if (force.isSupply) {
                     ammo += force.ammoLimit - force.ammoStock;
-                    ammoStock +=(force.ammoLimit - force.ammoStock);
+                    ammoStock += (force.ammoLimit - force.ammoStock);
                     force.ammoStock = force.ammoLimit;
 
                 }
-            }
-            else {
+            } else {
                 float a = force.fillWagonAmmo();
                 ammo += a;
                 ammoStock += a;
@@ -313,7 +302,7 @@ public class Force {
 
     public float emptyWagonFood() {
         float foodToDistribute = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
                 if (force.isSupply) {
                     float f = force.foodStock;
@@ -331,7 +320,7 @@ public class Force {
 
     public float emptyWagonAmmo() {
         float ammoToDistribute = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
                 if (force.isSupply) {
                     float a = force.ammoStock;
@@ -349,7 +338,7 @@ public class Force {
 
     public float takeWagonFood(float food) {
         float foodToDistribute = food;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
                 if (force.isSupply) {
                     if (foodToDistribute <= force.foodStock) {
@@ -357,16 +346,14 @@ public class Force {
                         force.foodStock -= foodToDistribute;
                         foodToDistribute = 0;
                         break;
-                    }
-                    else {
+                    } else {
                         float f = force.foodStock;
                         foodToDistribute -= f;
                         force.foodStock = 0;
                         foodStock -= f;
                     }
                 }
-            }
-            else {
+            } else {
                 float f = force.takeWagonFood(foodToDistribute);
                 foodToDistribute -= f;
                 foodStock -= f;
@@ -377,7 +364,7 @@ public class Force {
 
     public float takeWagonAmmo(float ammo) {
         float ammoToDistribute = ammo;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
                 if (force.isSupply) {
                     if (ammoToDistribute <= force.ammoStock) {
@@ -385,16 +372,14 @@ public class Force {
                         force.ammoStock -= ammoToDistribute;
                         ammoToDistribute = 0;
                         break;
-                    }
-                    else {
+                    } else {
                         float a = force.ammoStock;
                         ammoToDistribute -= a;
                         force.ammoStock = 0;
                         ammoStock -= a;
                     }
                 }
-            }
-            else {
+            } else {
                 float a = force.takeWagonAmmo(ammoToDistribute);
                 ammoToDistribute -= a;
                 ammoStock -= a;
@@ -405,7 +390,7 @@ public class Force {
 
     public float fillWagonFood(float food) {
         float foodToDistribute = food;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
                 if (force.isSupply) {
                     if (foodToDistribute < force.foodLimit - force.foodStock) {
@@ -413,15 +398,13 @@ public class Force {
                         foodStock += foodToDistribute;
                         foodToDistribute = 0;
                         break;
-                    }
-                    else {
+                    } else {
                         foodToDistribute -= (force.foodLimit - force.foodStock);
                         foodStock += (force.foodLimit - force.foodStock);
                         force.foodStock = force.foodLimit;
                     }
                 }
-            }
-            else {
+            } else {
                 float f = foodToDistribute - force.fillWagonFood(foodToDistribute);
                 foodToDistribute -= f;
                 foodStock += f;
@@ -492,7 +475,7 @@ public class Force {
     //
     //
     public float distributeFood(float food) {
-        UnitType [] types = {SUPPLY, INFANTRY, CAVALRY, ARTILLERY};
+        UnitType[] types = {SUPPLY, INFANTRY, CAVALRY, ARTILLERY};
         float free = food;
         free += collectFromUnits(SUPPLY, INFANTRY, CAVALRY, ARTILLERY);
         if (free > foodLimit) {
@@ -502,32 +485,62 @@ public class Force {
                 if (wagon.foodLimit >= free) {
                     wagon.foodStock = free;
                     free = 0;
-                }
-                else {
+                } else {
                     wagon.foodStock = wagon.foodLimit;
                     free -= wagon.foodLimit;
                 }
                 attach(wagon);
                 wagons++;
             }
+        } else if (free > foodLimit - wagons * SUPPLY.FOOD_LIMIT) {
+            free -= distributeToUnits(INFANTRY, CAVALRY, ARTILLERY);
+            distributeToWagons(free);
         }
-        else if (free > foodLimit - wagons * SUPPLY.FOOD_LIMIT) {
-            //TODO
+        else {
+            if (free < foodNeed * INFANTRY.FOOD_LIMIT / INFANTRY.FOOD_NEED) {
+
+            }
         }
         return free;
     }
+
+    public float distributeToWagons(float food) {
+        for (Force force : forces) {
+            if (force.isUnit) {
+                if (force.isSupply) {
+                    if (food > SUPPLY.FOOD_LIMIT) {
+                        food -= SUPPLY.FOOD_LIMIT;
+                        force.foodStock = SUPPLY.FOOD_LIMIT;
+                        foodStock += SUPPLY.FOOD_LIMIT;
+                    }
+                    else {
+                        force.foodStock = food;
+                        foodStock += food;
+                        food = 0;
+                    }
+                }
+
+            }
+            else {
+                float f = force.distributeToWagons(food);
+                food -= f;
+                foodStock += f;
+            }
+        }
+        return food;
+    }
+
     public float distributeToUnits(UnitType... types) {
         float need = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
-                if (((Unit)force).belongsToTypes(types, 0)) {
+                if (((Unit) force).belongsToTypes(types, 0)) {
                     float f = force.foodLimit;
                     need += f;
                     force.foodStock = f;
                     foodStock += f;
                 }
-            }
-            else {
+            } else {
                 float n = force.distributeToUnits(types);
                 need += n;
                 foodStock += n;
@@ -538,16 +551,15 @@ public class Force {
 
     public float collectFromUnits(UnitType... types) {
         float collected = 0;
-        for (Force force: forces) {
+        for (Force force : forces) {
             if (force.isUnit) {
-                if (((Unit)force).belongsToTypes(types, 0)) {
+                if (((Unit) force).belongsToTypes(types, 0)) {
                     float f = force.foodStock;
                     foodStock -= f;
                     force.foodStock = 0;
                     collected += f;
                 }
-            }
-            else {
+            } else {
                 float f = force.collectFromUnits(types);
                 collected += f;
                 foodStock -= f;
