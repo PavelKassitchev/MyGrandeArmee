@@ -80,5 +80,6 @@ public class Test {
         System.out.println(force1.collectFromUnits(UnitType.SUPPLY, UnitType.INFANTRY, UnitType.CAVALRY,
                 UnitType.ARTILLERY));
 
+
     }
 }
