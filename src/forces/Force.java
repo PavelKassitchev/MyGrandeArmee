@@ -2,7 +2,7 @@ package forces;
 
 import nations.Nation;
 import terrains.Hex;
-
+import static forces.UnitType.*;
 import java.util.ArrayList;
 
 public class Force {
@@ -217,13 +217,13 @@ public class Force {
                 if (((Unit)force).belongsToTypes(type, 0)) {
                     float d = force.foodLimit;
                     force.foodStock = d;
-                    foodStock = foodStock + d;
+                    foodStock += d;
                     distributed += d;
                 }
             }
             else {
                 float d = force.foodToUnits(type);
-                foodStock = foodStock + d;
+                foodStock += d;
                 distributed += d;
 
             }
@@ -251,21 +251,6 @@ public class Force {
         return distributed;
     }
 
-    public void distributeCombatFood(float ratio) {
-        for (Force force: forces) {
-            if (!force.isSupply) {
-                if (force.isUnit) {
-                    force.foodStock = force.foodNeed * ratio;
-                    foodStock += force.foodNeed * ratio;
-
-                }
-                else {
-                    force.distributeCombatFood(ratio);
-                    foodStock +=  force.foodStock;
-                }
-            }
-        }
-    }
 
     public float emptyCombatFood() {
         float food = 0;
@@ -325,8 +310,6 @@ public class Force {
         }
         return ammo;
     }
-
-
 
     public float emptyWagonFood() {
         float foodToDistribute = 0;
@@ -447,8 +430,6 @@ public class Force {
         return foodToDistribute;
     }
 
-
-
     public float fillCombatFood() {
         float food = 0;
         for (Force force : forces) {
@@ -486,14 +467,10 @@ public class Force {
         return ammo;
     }
 
-
-
-
     private void updateAll() {
         //TODO
 
     }
-
 
     private void updateSpeed() {
         float spd = 10.0f;
@@ -510,6 +487,75 @@ public class Force {
         }
     }
 
+    //This is an attempt
+    //to make a shorter version
+    //
+    //
+    public float distributeFood(float food) {
+        UnitType [] types = {SUPPLY, INFANTRY, CAVALRY, ARTILLERY};
+        float free = food;
+        free += collectFromUnits(SUPPLY, INFANTRY, CAVALRY, ARTILLERY);
+        if (free > foodLimit) {
+            free -= distributeToUnits(SUPPLY, INFANTRY, CAVALRY, ARTILLERY);
+            while (free > 0) {
+                Unit wagon = new Unit(nation, SUPPLY, hex);
+                if (wagon.foodLimit >= free) {
+                    wagon.foodStock = free;
+                    free = 0;
+                }
+                else {
+                    wagon.foodStock = wagon.foodLimit;
+                    free -= wagon.foodLimit;
+                }
+                attach(wagon);
+                wagons++;
+            }
+        }
+        else if (free > foodLimit - wagons * SUPPLY.FOOD_LIMIT) {
+            //TODO
+        }
+        return free;
+    }
+    public float distributeToUnits(UnitType... types) {
+        float need = 0;
+        for (Force force: forces) {
+            if (force.isUnit) {
+                if (((Unit)force).belongsToTypes(types, 0)) {
+                    float f = force.foodLimit;
+                    need += f;
+                    force.foodStock = f;
+                    foodStock += f;
+                }
+            }
+            else {
+                float n = force.distributeToUnits(types);
+                need += n;
+                foodStock += n;
+            }
+        }
+        return need;
+    }
+
+    public float collectFromUnits(UnitType... types) {
+        float collected = 0;
+        for (Force force: forces) {
+            if (force.isUnit) {
+                if (((Unit)force).belongsToTypes(types, 0)) {
+                    float f = force.foodStock;
+                    foodStock -= f;
+                    force.foodStock = 0;
+                    collected += f;
+                }
+            }
+            else {
+                float f = force.collectFromUnits(types);
+                collected += f;
+                foodStock -= f;
+            }
+        }
+
+        return collected;
+    }
 
 
 }
