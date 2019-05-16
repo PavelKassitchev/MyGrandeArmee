@@ -1,6 +1,7 @@
 package forces;
 
 import nations.Nation;
+import sun.misc.Cache;
 import terrains.Hex;
 
 import java.util.ArrayList;
@@ -231,12 +232,12 @@ public class Force {
                 if (((Unit) force).belongsToTypes(type, 0)) {
                     float d = force.foodNeed * ratio;
                     force.foodStock = d;
-                    foodStock = foodStock + d;
+                    foodStock += d;
                     distributed += d;
                 }
             } else {
                 float d = force.foodToUnits(ratio, type);
-                foodStock = foodStock + d;
+                foodStock += d;
                 distributed += d;
             }
         }
@@ -491,6 +492,7 @@ public class Force {
                 }
                 attach(wagon);
                 wagons++;
+                foodLimit += SUPPLY.FOOD_LIMIT;
             }
         } else if (free > foodLimit - wagons * SUPPLY.FOOD_LIMIT) {
             free -= distributeToUnits(INFANTRY, CAVALRY, ARTILLERY);
@@ -498,10 +500,53 @@ public class Force {
         }
         else {
             if (free < foodNeed * INFANTRY.FOOD_LIMIT / INFANTRY.FOOD_NEED) {
-
+                float ratio = free / foodNeed;
+                distributeToUnits(ratio, INFANTRY, CAVALRY, ARTILLERY);
+                free = 0;
+            }
+            else if (free > foodNeed * CAVALRY.FOOD_LIMIT / CAVALRY.FOOD_NEED) {
+                free -= distributeToUnits(INFANTRY, CAVALRY);
+                float ratio = ARTILLERY.FOOD_LIMIT / ARTILLERY.FOOD_NEED * free / (foodLimit - wagons * SUPPLY.FOOD_LIMIT - foodStock);
+                distributeToUnits(ratio, ARTILLERY);
+                free = 0;
+            }
+            else {
+                float distributed = distributeToUnits(INFANTRY);
+                free -= distributed;
+                float ratio = free / (foodNeed - distributed * INFANTRY.FOOD_NEED / INFANTRY.FOOD_LIMIT);
+                if (ratio < CAVALRY.FOOD_LIMIT / CAVALRY.FOOD_NEED) {
+                    distributeToUnits(ratio, CAVALRY, ARTILLERY);
+                    free =0;
+                }
+                else {
+                    free -= distributeToUnits(CAVALRY);
+                    ratio = ARTILLERY.FOOD_LIMIT / ARTILLERY.FOOD_NEED * free / (foodLimit - wagons * SUPPLY.FOOD_LIMIT - foodStock);
+                    distributeToUnits(ratio, ARTILLERY);
+                    free = 0;
+                }
             }
         }
         return free;
+    }
+
+    public float distributeToUnits(float ratio, UnitType... types) {
+        float need = 0;
+        for (Force force: forces) {
+            if (force.isUnit) {
+                if (((Unit)force).belongsToTypes(types, 0)) {
+                    float f = ratio * force.foodNeed;
+                    force.foodStock = f;
+                    foodStock += f;
+                    need += f;
+                }
+            }
+            else {
+                float f = force.distributeToUnits(ratio, types);
+                foodStock += f;
+                need += f;
+            }
+        }
+        return need;
     }
 
     public float distributeToWagons(float food) {

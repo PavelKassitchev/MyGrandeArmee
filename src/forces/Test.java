@@ -47,6 +47,7 @@ public class Test {
         unit3.foodStock = 0.5f;
         unit7.foodStock = 1;
         unit2.foodStock = 0.1f;
+        unit4.foodStock = 0.1f;
 
         Force force1 = new Force(unit1, unit2, unit7);
         Force force2 = new Force(unit3, unit4);
@@ -55,7 +56,7 @@ public class Test {
         force1.attach(force2);
 
 
-        force1.attach(unit6);
+        force3.attach(unit6);
 
 
         list(force1);
@@ -66,7 +67,7 @@ public class Test {
         System.out.println();
 
         //force1.distributeSupplies(0f, 0);
-        force1.distributeFood(7);
+        force1.distributeFood(90);
         list(force1);
         System.out.println();
         System.out.println("Army: food - " + force1.foodStock + " food need - " +
