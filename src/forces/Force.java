@@ -490,6 +490,7 @@ public class Force {
                     wagon.foodStock = wagon.foodLimit;
                     free -= wagon.foodLimit;
                 }
+                wagon.ammoStock = 0;
                 attach(wagon);
                 wagons++;
                 foodLimit += SUPPLY.FOOD_LIMIT;
